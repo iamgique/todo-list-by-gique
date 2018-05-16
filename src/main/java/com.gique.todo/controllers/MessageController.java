@@ -34,11 +34,11 @@ public class MessageController {
 
     @EventMapping
     public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) throws Exception {
-        log.info(String.format("Line user event: {}", event));
+        log.info("Line user event: {}", event);
         try {
             return messageService.handleMessage(event);
         } catch (Exception e) {
-            log.error(String.format("Error: {}", e.getMessage()));
+            log.error("Error: {}", e.getMessage());
             return new TextMessage("System Error... Please try again.");
         }
         //return new TextMessage(event.getMessage().getText());

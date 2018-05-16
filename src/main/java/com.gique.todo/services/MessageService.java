@@ -21,26 +21,30 @@ public class MessageService {
     }
 
     public TextMessage handleMessage(MessageEvent<TextMessageContent> event) throws Exception {
-        // \w.*\s:\s\w.*\s:\s\w.*
-        String pattern = "\\w.*\\s:\\s\\w.*\\s";
+        log.info("MessageService: handleMessage");
         try {
-            if(!Optional.ofNullable(String.valueOf(event.getMessage().getText())).equals("")){
-                boolean a = String.valueOf(event.getMessage().getText()).matches(pattern);
-                log.info(String.format("handleMessage: {}", a));
-                return new TextMessage("https://www.apple.com");
+            Optional.ofNullable(String.valueOf(event.getMessage().getText())).orElseThrow(() -> new Exception());
+
+            if(checkCreateTodoFormat(String.valueOf(event.getMessage().getText()))){
+                return new TextMessage("Create todo list");
             }
 
-            if((Optional.ofNullable(String.valueOf(event.getMessage().getText())).orElse("")).equals("edit")) {
-                return new TextMessage("https://www.google.com");
+            if(String.valueOf(event.getMessage().getText()).equals("edit")) {
+                return new TextMessage("Edit todo list");
             }
+
         } catch (Exception e) {
-            log.error(String.format("Error: {}", e));
+            log.error("Error: {}", e);
         }
-
         return new TextMessage("https://www.pantip.com");
     }
 
-    public void checkFormat() {
+
+    public boolean checkCreateTodoFormat(String msg) {
+        log.info("checkCreateTodoFormat: {}", msg);
+        // \w.*\s:\s\w.*\s:\s\w.*
+        String pattern = "\\w.*\\s:\\s\\w.*\\s";
+        return String.valueOf(msg).matches(pattern);
 
     }
 
