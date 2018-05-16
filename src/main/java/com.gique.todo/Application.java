@@ -10,6 +10,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Optional;
+
 
 @SpringBootApplication
 @EnableAutoConfiguration
@@ -23,6 +25,15 @@ public class Application {
     @EventMapping
     public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
         System.out.println("event: " + event);
+        System.out.println("Reply Token: " + event.getReplyToken());
+        System.out.println("Source: " + event.getSource());
+        System.out.println("Timestamp: " + event.getTimestamp());
+        System.out.println("Message: " + event.getMessage());
+
+        String msg = Optional.ofNullable(String.valueOf(event.getMessage())).orElse("");
+        if(msg.equals("edit")){
+            return new TextMessage("https://www.google.com");
+        }
         return new TextMessage(event.getMessage().getText());
     }
 
