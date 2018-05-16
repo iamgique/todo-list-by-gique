@@ -14,7 +14,7 @@ public class WebhookController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     @ResponseStatus( HttpStatus.OK )
-    public ResponseEntity<String> webhook(@RequestHeader(value = "X-Line-Signature", required = false) String signature {
+    public ResponseEntity<String> webhook(@RequestHeader(value = "X-Line-Signature", required = false) String signature) {
         return new ResponseEntity<>("Test" + String.valueOf(signature), HttpStatus.OK);
     }
 }
