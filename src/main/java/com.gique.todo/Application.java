@@ -30,10 +30,9 @@ public class Application {
         System.out.println("Timestamp: " + event.getTimestamp());
         System.out.println("Message: " + event.getMessage());
 
-        String msg = Optional.ofNullable(String.valueOf(event.getMessage())).orElse("");
-        if(msg.equals("edit")){
+        if(Optional.ofNullable(String.valueOf(event.getMessage().getText())).orElse("").equals("edit"))
             return new TextMessage("https://www.google.com");
-        }
+        
         return new TextMessage(event.getMessage().getText());
     }
 
