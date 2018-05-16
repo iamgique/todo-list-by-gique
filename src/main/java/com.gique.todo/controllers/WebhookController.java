@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("webhook")
 public class WebhookController {
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.POST)
     @ResponseStatus( HttpStatus.OK )
     public ResponseEntity<String> webhook() {
         return new ResponseEntity<>("", HttpStatus.OK);
