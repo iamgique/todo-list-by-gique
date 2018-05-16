@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("xxxwebhook")
-public class XXXWebhookController {
+@RequestMapping("webhook")
+public class WebhookController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     @ResponseStatus( HttpStatus.OK )
-    public ResponseEntity<String> xxxwebhook() {
+    public ResponseEntity<String> webhook() {
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 }
