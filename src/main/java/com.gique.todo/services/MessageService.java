@@ -40,4 +40,8 @@ public class MessageService {
         return new TextMessage("https://www.pantip.com");
     }
 
+    public void checkFormat() {
+
+    }
+
 }

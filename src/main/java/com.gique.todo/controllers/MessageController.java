@@ -23,13 +23,13 @@ public class MessageController {
     @NonNull
     private MessageService messageService;
 
-    @NonNull
-    private TodoListService todoListService;
+    //@NonNull
+    //private TodoListService todoListService;
 
     @Autowired
-    public MessageController(MessageService messageService, TodoListService todoListService){
+    public MessageController(MessageService messageService){
         this.messageService = messageService;
-        this.todoListService = todoListService;
+        //this.todoListService = todoListService;
     }
 
     @EventMapping
