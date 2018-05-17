@@ -54,10 +54,10 @@ public class Application {
         try (Connection connection = dataSource.getConnection()) {
             Statement stmt = dataSource.getConnection().createStatement();
             //stmt.executeUpdate("DROP TABLE IF EXISTS todo");
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS todo (id SERIAL PRIMARY KEY, line_id TEXT NOT NULL,  task TEXT NOT NULL, status  char(10), important char(1), created_at TIMESTAMP NOT NULL, updated_at TIMESTAMP NOT NULL);");
-            stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, created_at, updated_at) VALUES ('id_1_test', 'test task', 'incomplete', '0', now(), now());");
-            stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, created_at, updated_at) VALUES ('id_1_test', 'test task 2', 'complete', '0', now(), now());");
-            stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, created_at, updated_at) VALUES ('id_1_test', 'test task 3', 'overdue', '0', now(), now());");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS todo (id SERIAL PRIMARY KEY, line_id TEXT NOT NULL,  task TEXT NOT NULL, status  char(10), important char(1), due_date TIMESTAMP NOT NULL, created_at TIMESTAMP NOT NULL, updated_at TIMESTAMP NOT NULL);");
+            stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, created_at, updated_at) VALUES ('id_1_test', 'test task', 'incomplete', '0', now(), now(), now());");
+            stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, created_at, updated_at) VALUES ('id_1_test', 'test task 2', 'complete', '0', now(), now(), now());");
+            stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, created_at, updated_at) VALUES ('id_1_test', 'test task 3', 'overdue', '0', now(), now(), now());");
             ResultSet rs = stmt.executeQuery("SELECT * FROM todo WHERE line_id = 'id_1_test'");
             while (rs.next()) {
                 System.out.println("Read from DB: " + rs.getString("task"));

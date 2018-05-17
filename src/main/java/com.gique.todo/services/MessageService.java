@@ -2,17 +2,21 @@ package com.gique.todo.services;
 
 import com.gique.todo.Application;
 import com.gique.todo.models.TodoTaskModel;
+import com.gique.todo.utils.Util;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.linecorp.bot.model.message.TextMessage;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,31 +30,19 @@ public class MessageService {
     @Autowired
     private DataSource dataSource;
 
+    @NonNull
+    private final Util util;
+
     @Autowired
-    public MessageService(){
+    public MessageService(Util util){
+        this.util = util;
     }
 
     public void saveTodoTask(TodoTaskModel todoTaskModel) throws SQLException, ParseException {
-        String createdAt = getCreatedAt(todoTaskModel);
+        String dueDate = util.getDueDate(todoTaskModel.getDate(), todoTaskModel.getTime());
         Statement stmt = dataSource.getConnection().createStatement();
-        stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, created_at, updated_at) " +
-                "VALUES ('"+todoTaskModel.getLineId()+"', '"+todoTaskModel.getTask()+"', 'incomplete', '0', '"+createdAt+"', now());");
-
-    }
-
-    public String getCreatedAt(TodoTaskModel todoTaskModel) throws ParseException {
-        String createdAt = "";
-        SimpleDateFormat sdf = new SimpleDateFormat("d/M/yy");
-        Date d = sdf.parse(todoTaskModel.getDate());
-
-        if(todoTaskModel.getTime() == null || todoTaskModel.getTime().equals("")){
-            sdf.applyPattern("yyyy-MM-dd 12:00");
-            createdAt = sdf.format(d);
-        } else {
-            sdf.applyPattern("yyyy-MM-dd" + todoTaskModel.getTime());
-            createdAt = sdf.format(d);
-        }
-        return createdAt;
+        stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, due_date, created_at, updated_at) " +
+                "VALUES ('"+todoTaskModel.getLineId()+"', '"+todoTaskModel.getTask()+"', 'incomplete', '0', '"+dueDate+"', now(), now());");
     }
 
     public TextMessage handleMessage(MessageEvent<TextMessageContent> event) throws Exception {
@@ -64,12 +56,12 @@ public class MessageService {
                 TodoTaskModel todoTaskModel = splitTodoTask(msg);
                 todoTaskModel.setLineId(String.valueOf(event.getSource().getUserId()));
                 saveTodoTask(todoTaskModel);
-                return new TextMessage("Your Todo List \n "
-                    + todoTaskModel.getTask() + " : " + getCreatedAt(todoTaskModel));
+                return new TextMessage("Todo List \n Your Task: "
+                    + todoTaskModel.getTask() + " : " + util.getDueDate(todoTaskModel.getDate(), todoTaskModel.getTime()));
             } else if (msg.equals("edit")) {
                 return new TextMessage("Edit todo list");
             } else {
-                return new TextMessage("Cannot post Todo task because it's wrong format.");
+                return new TextMessage("For example make todo list \n task : date/month/year : time e.g Buy milk : 3/5/18 : 13:00 \n task : today : time e.g Finsh writing shopping list : today : 15:30 \n task : tommorrow : time e.g Watch movie : tommorrow : 18:00 \n ** If not specific time then use default time as 12:00 pm ** \n ** todo list by input word edit in chat and system will return webview **");
             }
 
         } catch (Exception e) {
