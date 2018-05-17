@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
@@ -39,6 +40,20 @@ public class MessageService {
                 "VALUES ('"+todoTaskModel.getLineId()+"', '"+todoTaskModel.getTask()+"', 'incomplete', '0', '"+dueDate+"', now(), now());");
     }
 
+    public boolean getTodoTaskByLineId(String lineId) throws SQLException {
+        Statement stmt = dataSource.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT task, status, important, due_date FROM todo " +
+                "WHERE line_id = '"+lineId+"' ORDER BY important, due_date ASC");
+
+        while (rs.next()) {
+            System.out.println("Read from DB: " + rs.getString("task"));
+            System.out.println("Read from DB: " + rs.getString("status"));
+            System.out.println("Read from DB: " + rs.getString("important"));
+            System.out.println("Read from DB: " + rs.getString("due_date"));
+        }
+        return true;
+    }
+
     public TextMessage handleMessage(MessageEvent<TextMessageContent> event) throws Exception {
         log.info("MessageService: handleMessage");
         try {
@@ -50,6 +65,8 @@ public class MessageService {
                 TodoTaskModel todoTaskModel = splitTodoTask(msg);
                 todoTaskModel.setLineId(String.valueOf(event.getSource().getUserId()));
                 saveTodoTask(todoTaskModel);
+                getTodoTaskByLineId(String.valueOf(event.getSource().getUserId()));
+
                 return new TextMessage("Todo List: \n"
                     + todoTaskModel.getTask() + " : " + util.getDueDate(todoTaskModel.getDate(), todoTaskModel.getTime()));
             } else if (msg.equals("edit")) {

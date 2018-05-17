@@ -2,7 +2,6 @@ package com.gique.todo.controllers;
 
 
 import com.gique.todo.constants.Response;
-import com.gique.todo.models.ResponseModel;
 import com.gique.todo.models.StatusModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
@@ -18,7 +17,7 @@ public class TodoListController {
 
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    /*@RequestMapping(value = "/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public HttpEntity<ResponseModel> getTodoList() throws Exception {
         HttpEntity<ResponseModel> responseModel = null;
 
@@ -26,6 +25,6 @@ public class TodoListController {
         responseModel = new HttpEntity<>(new ResponseModel(status, "TEST"));
 
         return responseModel;
-    }
+    }*/
 
 }
