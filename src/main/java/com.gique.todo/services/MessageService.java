@@ -1,5 +1,6 @@
 package com.gique.todo.services;
 
+import com.gique.todo.constants.Constants;
 import com.gique.todo.models.TodoTaskModel;
 import com.gique.todo.models.TodoResponseModel;
 import com.gique.todo.utils.Util;
@@ -87,20 +88,20 @@ public class MessageService {
                 resp.append("Todo List: \n");
                 for(TodoResponseModel todoResponseModel : todoResponseModelList){
                     resp.append("Task: " + todoResponseModel.getTask());
-                    resp.append("Status: " + todoResponseModel.getStatus());
-                    resp.append("Due: " + todoResponseModel.getDueDate() + "\n");
+                    resp.append(" Status: " + todoResponseModel.getStatus());
+                    resp.append(" Due date: " + todoResponseModel.getDueDate() + "\n");
                 }
 
                 return new TextMessage(resp.toString());
             } else if (msg.equals("edit")) {
                 return new TextMessage("Edit todo list");
             } else {
-                return new TextMessage("For example make todo list \n task : date/month/year : time e.g Buy milk : 3/5/18 : 13:00 \n task : today : time e.g Finsh writing shopping list : today : 15:30 \n task : tommorrow : time e.g Watch movie : tommorrow : 18:00 \n ** If not specific time then use default time as 12:00 pm ** \n ** todo list by input word edit in chat and system will return webview **");
+                return new TextMessage(Constants.EXAMPLE_POST_TODO_LIST.getContent());
             }
 
         } catch (Exception e) {
             log.error("Error: {}", e);
-            return new TextMessage("Cannot post Todo task because it's wrong format.");
+            return new TextMessage(Constants.CANNOT_POST_TODO_LIST.getContent());
         }
     }
 

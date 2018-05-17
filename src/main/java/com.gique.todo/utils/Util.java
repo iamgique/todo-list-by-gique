@@ -60,13 +60,13 @@ public class Util {
         return dateFormat.format(dateFromOld);
     }
 
-    public static void main(String args[]) throws ParseException {
+    /*public static void main(String args[]) throws ParseException {
 
         System.err.println(getDueDate("today", ""));
         System.err.println(getDueDate("tomorrow", ""));
 
-        /*saveTodoTask();
-        *//**//*String a = "aaaa : 20/12/18";
+        *//*saveTodoTask();
+        *//**//**//**//*String a = "aaaa : 20/12/18";
         String b = "aaaa : 20/12/18 : dssadkl";
         String c = "aaaa : 20/12/18 : 22:22";
         String d = "aaaaaa";
@@ -80,7 +80,7 @@ public class Util {
         System.err.println(checkCreateTodoFormat(d));
         System.err.println(checkCreateTodoFormat(e));
         System.err.println(checkCreateTodoFormat(f));
-        System.err.println(checkCreateTodoFormat(g));*/
-    }
+        System.err.println(checkCreateTodoFormat(g));*//*
+    }*/
 
 }
