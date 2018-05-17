@@ -43,7 +43,7 @@ public class Util {
 
     public static String convertTodayTomorrowDate(String param) {
         log.info("convertTodayTomorrowDate: reqDate: {}", param);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", new Locale("en", "EN"));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d/M/yy", new Locale("en", "EN"));
         Date d = new Date();
         LocalDateTime now;
 
@@ -60,12 +60,12 @@ public class Util {
         return dateFormat.format(dateFromOld);
     }
 
-    /*public static void main(String args[]){
+    public static void main(String args[]) throws ParseException {
 
-        System.err.println(convertTodayTomorrowDate("today"));
-        System.err.println(convertTodayTomorrowDate("tomorrow"));
+        System.err.println(getDueDate("today", ""));
+        System.err.println(getDueDate("tomorrow", ""));
 
-        *//*saveTodoTask();
+        /*saveTodoTask();
         *//**//*String a = "aaaa : 20/12/18";
         String b = "aaaa : 20/12/18 : dssadkl";
         String c = "aaaa : 20/12/18 : 22:22";
@@ -80,7 +80,7 @@ public class Util {
         System.err.println(checkCreateTodoFormat(d));
         System.err.println(checkCreateTodoFormat(e));
         System.err.println(checkCreateTodoFormat(f));
-        System.err.println(checkCreateTodoFormat(g));*//*
-    }*/
+        System.err.println(checkCreateTodoFormat(g));*/
+    }
 
 }
