@@ -1,8 +1,8 @@
 package com.gique.todo.controllers;
 
 import com.gique.todo.Application;
+import com.gique.todo.constants.Constants;
 import com.gique.todo.services.MessageService;
-import com.gique.todo.services.TodoListService;
 import com.linecorp.bot.model.event.Event;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
@@ -23,13 +23,9 @@ public class MessageController {
     @NonNull
     private MessageService messageService;
 
-    //@NonNull
-    //private TodoListService todoListService;
-
     @Autowired
     public MessageController(MessageService messageService){
         this.messageService = messageService;
-        //this.todoListService = todoListService;
     }
 
     @EventMapping
@@ -39,9 +35,8 @@ public class MessageController {
             return messageService.handleMessage(event);
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
-            return new TextMessage("System Error... Please try again.");
+            return new TextMessage(Constants.CANNOT_POST_TODO_LIST.getContent());
         }
-        //return new TextMessage(event.getMessage().getText());
     }
 
     @EventMapping

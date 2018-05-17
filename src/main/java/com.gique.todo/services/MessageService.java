@@ -88,7 +88,7 @@ public class MessageService {
                 resp.append("Todo List: \n");
                 for(TodoResponseModel todoResponseModel : todoResponseModelList){
                     resp.append("Task: " + todoResponseModel.getTask());
-                    resp.append(" Status: " + todoResponseModel.getStatus());
+                    resp.append("\n Status: " + todoResponseModel.getStatus());
                     resp.append(" Due date: " + todoResponseModel.getDueDate() + "\n");
                 }
 
@@ -100,7 +100,6 @@ public class MessageService {
             }
 
         } catch (Exception e) {
-            log.error("Error: {}", e);
             return new TextMessage(Constants.CANNOT_POST_TODO_LIST.getContent());
         }
     }

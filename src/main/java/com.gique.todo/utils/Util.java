@@ -27,18 +27,18 @@ public class Util {
 
     public static String getDueDate(String reqDate, String reqTime) throws ParseException {
         log.info("getDueDate: reqDate: {} reqTime: {}", reqDate, reqTime);
-        String createdAt = "";
+        String dueDate = "";
         SimpleDateFormat sdf = new SimpleDateFormat("d/M/yy");
         Date d = sdf.parse(convertTodayTomorrowDate(reqDate));
 
         if(reqTime == null || reqTime.equals("")){
             sdf.applyPattern("yyyy-MM-dd 12:00");
-            createdAt = sdf.format(d);
+            dueDate = sdf.format(d);
         } else {
             sdf.applyPattern("yyyy-MM-dd " + reqTime);
-            createdAt = sdf.format(d);
+            dueDate = sdf.format(d);
         }
-        return createdAt;
+        return dueDate;
     }
 
     public static String convertTodayTomorrowDate(String param) {
