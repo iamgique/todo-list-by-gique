@@ -3,6 +3,7 @@ package com.gique.todo.services;
 import com.gique.todo.Application;
 import com.gique.todo.models.ResponseModel;
 import com.gique.todo.models.TodoTaskModel;
+import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.linecorp.bot.model.message.TextMessage;
@@ -11,9 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
@@ -21,19 +20,26 @@ public class MessageService {
     private static final Logger log = LogManager.getLogger(Application.class);
 
     @Autowired
-    public MessageService(){
+    private UserService userService;
 
+    @Autowired
+    public MessageService(UserService userService){
+        this.userService = userService;
     }
 
     public TextMessage handleMessage(MessageEvent<TextMessageContent> event) throws Exception {
         log.info("MessageService: handleMessage");
         try {
+            Optional.ofNullable(String.valueOf(event.getSource().getUserId())).orElseThrow(() -> new Exception());
             Optional.ofNullable(String.valueOf(event.getMessage().getText())).orElseThrow(() -> new Exception());
+            String userId = event.getSource().getUserId();
             String msg = String.valueOf(event.getMessage().getText());
 
             if(checkCreateTodoFormat(msg)){
                 TodoTaskModel todoTaskModel = splitTodoTask(msg);
-                return new TextMessage("Create todo list \n " + todoTaskModel.getTask() + " : " + todoTaskModel.getDate() + " : " + todoTaskModel.getTime());
+                return new TextMessage("User ID: "+ userId + "\n" + userService.getUserProfile(userId) +
+                        "Create todo list: \n " + todoTaskModel.getTask() + " : " + todoTaskModel.getDate() +
+                        " : " + todoTaskModel.getTime());
             }
 
             if(msg.equals("edit")) {
