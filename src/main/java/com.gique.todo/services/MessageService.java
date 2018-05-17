@@ -1,6 +1,7 @@
 package com.gique.todo.services;
 
 import com.gique.todo.models.TodoTaskModel;
+import com.gique.todo.models.TodoResponseModel;
 import com.gique.todo.utils.Util;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
@@ -16,6 +17,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,18 +43,29 @@ public class MessageService {
                 "VALUES ('"+todoTaskModel.getLineId()+"', '"+todoTaskModel.getTask()+"', 'incomplete', '0', '"+dueDate+"', now(), now());");
     }
 
-    public boolean getTodoTaskByLineId(String lineId) throws SQLException {
+    public List<TodoResponseModel> getTodoTaskByLineId(String lineId) throws SQLException {
+        List<TodoResponseModel> todoResponseModelList = new ArrayList<>();
+        TodoResponseModel todoResponseModel;
+
         Statement stmt = dataSource.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT task, status, important, due_date FROM todo " +
+        ResultSet rs = stmt.executeQuery("SELECT id, line_id, task, status, important, due_date, created_at, updated_at FROM todo " +
                 "WHERE line_id = '"+lineId+"' ORDER BY important, due_date ASC");
 
-        while (rs.next()) {
-            System.out.println("Read from DB: " + rs.getString("task"));
-            System.out.println("Read from DB: " + rs.getString("status"));
-            System.out.println("Read from DB: " + rs.getString("important"));
-            System.out.println("Read from DB: " + rs.getString("due_date"));
+        if(rs != null){
+            while (rs.next()) {
+                todoResponseModel = new TodoResponseModel();
+                todoResponseModel.setId(rs.getString("id"));
+                todoResponseModel.setLineId(rs.getString("line_id"));
+                todoResponseModel.setTask(rs.getString("task"));
+                todoResponseModel.setStatus(rs.getString("status"));
+                todoResponseModel.setImportant(rs.getString("important"));
+                todoResponseModel.setDueDate(rs.getString("due_date"));
+                todoResponseModel.setCreatedAt(rs.getString("created_at"));
+                todoResponseModel.setUpdatedAt(rs.getString("updated_at"));
+                todoResponseModelList.add(todoResponseModel);
+            }
         }
-        return true;
+        return todoResponseModelList;
     }
 
     public TextMessage handleMessage(MessageEvent<TextMessageContent> event) throws Exception {
@@ -65,10 +79,19 @@ public class MessageService {
                 TodoTaskModel todoTaskModel = splitTodoTask(msg);
                 todoTaskModel.setLineId(String.valueOf(event.getSource().getUserId()));
                 saveTodoTask(todoTaskModel);
-                getTodoTaskByLineId(String.valueOf(event.getSource().getUserId()));
+                List<TodoResponseModel> todoResponseModelList = getTodoTaskByLineId(String.valueOf(event.getSource().getUserId()));
 
-                return new TextMessage("Todo List: \n"
-                    + todoTaskModel.getTask() + " : " + util.getDueDate(todoTaskModel.getDate(), todoTaskModel.getTime()));
+                Optional.ofNullable(todoResponseModelList).orElseThrow(() -> new Exception());
+
+                StringBuffer resp = new StringBuffer();
+                resp.append("Todo List: \n");
+                for(TodoResponseModel todoResponseModel : todoResponseModelList){
+                    resp.append("Task: " + todoResponseModel.getTask());
+                    resp.append("Status: " + todoResponseModel.getStatus());
+                    resp.append("Due: " + todoResponseModel.getDueDate() + "\n");
+                }
+
+                return new TextMessage(resp.toString());
             } else if (msg.equals("edit")) {
                 return new TextMessage("Edit todo list");
             } else {
