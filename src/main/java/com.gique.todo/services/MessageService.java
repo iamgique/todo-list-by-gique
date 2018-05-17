@@ -1,9 +1,7 @@
 package com.gique.todo.services;
 
 import com.gique.todo.Application;
-import com.gique.todo.models.ResponseModel;
 import com.gique.todo.models.TodoTaskModel;
-import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.linecorp.bot.model.message.TextMessage;
@@ -12,6 +10,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -20,11 +24,33 @@ public class MessageService {
     private static final Logger log = LogManager.getLogger(Application.class);
 
     @Autowired
-    private UserService userService;
+    private DataSource dataSource;
 
     @Autowired
-    public MessageService(UserService userService){
-        this.userService = userService;
+    public MessageService(){
+    }
+
+    public void saveTodoTask(TodoTaskModel todoTaskModel) throws SQLException, ParseException {
+        String createdAt = getCreatedAt(todoTaskModel);
+        Statement stmt = dataSource.getConnection().createStatement();
+        stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, created_at, updated_at) " +
+                "VALUES ('"+todoTaskModel.getLineId()+"', '"+todoTaskModel.getTask()+"', 'incomplete', '0', '"+createdAt+"', now());");
+
+    }
+
+    public String getCreatedAt(TodoTaskModel todoTaskModel) throws ParseException {
+        String createdAt = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("d/M/yy");
+        Date d = sdf.parse(todoTaskModel.getDate());
+
+        if(todoTaskModel.getTime() == null || todoTaskModel.getTime().equals("")){
+            sdf.applyPattern("yyyy-MM-dd 12:00");
+            createdAt = sdf.format(d);
+        } else {
+            sdf.applyPattern("yyyy-MM-dd" + todoTaskModel.getTime());
+            createdAt = sdf.format(d);
+        }
+        return createdAt;
     }
 
     public TextMessage handleMessage(MessageEvent<TextMessageContent> event) throws Exception {
@@ -32,24 +58,24 @@ public class MessageService {
         try {
             Optional.ofNullable(String.valueOf(event.getSource().getUserId())).orElseThrow(() -> new Exception());
             Optional.ofNullable(String.valueOf(event.getMessage().getText())).orElseThrow(() -> new Exception());
-            String userId = event.getSource().getUserId();
             String msg = String.valueOf(event.getMessage().getText());
 
-            if(checkCreateTodoFormat(msg)){
+            if (checkCreateTodoFormat(msg)) {
                 TodoTaskModel todoTaskModel = splitTodoTask(msg);
-                return new TextMessage("User ID: "+ userId + "\n" + userService.getUserProfile(userId) +
-                        "Create todo list: \n " + todoTaskModel.getTask() + " : " + todoTaskModel.getDate() +
-                        " : " + todoTaskModel.getTime());
-            }
-
-            if(msg.equals("edit")) {
+                todoTaskModel.setLineId(String.valueOf(event.getSource().getUserId()));
+                saveTodoTask(todoTaskModel);
+                return new TextMessage("Your Todo List \n "
+                    + todoTaskModel.getTask() + " : " + getCreatedAt(todoTaskModel));
+            } else if (msg.equals("edit")) {
                 return new TextMessage("Edit todo list");
+            } else {
+                return new TextMessage("Cannot post Todo task because it's wrong format.");
             }
 
         } catch (Exception e) {
             log.error("Error: {}", e);
+            return new TextMessage("Cannot post Todo task because it's wrong format.");
         }
-        return new TextMessage("https://www.pantip.com");
     }
 
 
@@ -67,15 +93,15 @@ public class MessageService {
 
     public boolean checkCreateTodoFormat(String msg) {
         log.info("checkCreateTodoFormat: {}", msg);
-        String regex = "(\\w.*\\s:\\s)[^:]\\w.*";
+        String regex = "(.*)\\s:\\s(\\d{1,2}/\\d{1,2}/\\d{1,2}|today|tomorrow)(\\s:\\s\\d{1,2}:\\d{1,2}|$)";
+        //String regex = "(\\w.*\\s:\\s)[^:]\\w.*";
         //String regex = "/.*\\s:\\s.*\\s/g";
-        //String regex = "/^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$/";
-        //Pattern pattern = Pattern.compile(regex);
         return Pattern.matches(regex, msg);
     }
 
-    /*public static void main(String args[]){
-        String a = "aaaa : 20/12/18";
+    /*public static void main(String args[]) throws SQLException, ParseException {
+        saveTodoTask();
+        *//*String a = "aaaa : 20/12/18";
         String b = "aaaa : 20/12/18 : dssadkl";
         String c = "aaaa : 20/12/18 : 22:22";
         String d = "aaaaaa";
@@ -83,13 +109,13 @@ public class MessageService {
         String f = "aaaa : : 20/12/18 : 22:22";
         String g = "aaaa vvvv : 20/12/18 : 22:22";
 
-        System.err.println(splitTodoTask(a));
-        System.err.println(splitTodoTask(b));
-        System.err.println(splitTodoTask(c));
-        System.err.println(splitTodoTask(d));
-        System.err.println(splitTodoTask(e));
-        System.err.println(splitTodoTask(f));
-        System.err.println(splitTodoTask(g));
+        System.err.println(checkCreateTodoFormat(a));
+        System.err.println(checkCreateTodoFormat(b));
+        System.err.println(checkCreateTodoFormat(c));
+        System.err.println(checkCreateTodoFormat(d));
+        System.err.println(checkCreateTodoFormat(e));
+        System.err.println(checkCreateTodoFormat(f));
+        System.err.println(checkCreateTodoFormat(g));*//*
     }*/
 
 }

@@ -35,27 +35,6 @@ public class Application {
     @Autowired
     private DataSource dataSource;
 
-    @RequestMapping("/db")
-    String db(Map<String, Object> model) {
-        try (Connection connection = dataSource.getConnection()) {
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-            stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
-            ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
-
-            ArrayList<String> output = new ArrayList<String>();
-            while (rs.next()) {
-                output.add("Read from DB: " + rs.getTimestamp("tick"));
-            }
-
-            model.put("records", output);
-            return "db";
-        } catch (Exception e) {
-            model.put("message", e.getMessage());
-            return "error";
-        }
-    }
-
     @Bean
     public DataSource dataSource() throws SQLException {
         if (dbUrl == null || dbUrl.isEmpty()) {
@@ -71,6 +50,22 @@ public class Application {
     public void init() {
         log.warn("Memory: Max[{}], Free[{}], Total[{}]", Runtime.getRuntime().maxMemory(),
                 Runtime.getRuntime().freeMemory(), Runtime.getRuntime().totalMemory());
+
+        try (Connection connection = dataSource.getConnection()) {
+            Statement stmt = dataSource.getConnection().createStatement();
+            //stmt.executeUpdate("DROP TABLE IF EXISTS todo");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS todo (id SERIAL PRIMARY KEY, line_id TEXT NOT NULL,  task TEXT NOT NULL, status  char(10), important char(1), created_at TIMESTAMP NOT NULL, updated_at TIMESTAMP NOT NULL);");
+            stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, created_at, updated_at) VALUES ('id_1_test', 'test task', 'incomplete', '0', now(), now());");
+            stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, created_at, updated_at) VALUES ('id_1_test', 'test task 2', 'complete', '0', now(), now());");
+            stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, created_at, updated_at) VALUES ('id_1_test', 'test task 3', 'overdue', '0', now(), now());");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM todo WHERE line_id = 'id_1_test'");
+            while (rs.next()) {
+                System.out.println("Read from DB: " + rs.getString("task"));
+            }
+        }catch (Exception e) {
+            log.error("Error: {}", e.getMessage());
+        }
+
     }
 
     public static void main(String[] args) {
