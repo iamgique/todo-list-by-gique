@@ -25,6 +25,7 @@ import java.util.Map;
 
 @SpringBootApplication
 @EnableAutoConfiguration
+@Controller
 public class Application {
     private static final Logger log = LogManager.getLogger(Application.class);
 
@@ -65,8 +66,6 @@ public class Application {
             return new HikariDataSource(config);
         }
     }
-
-
 
     @PostConstruct
     public void init() {
