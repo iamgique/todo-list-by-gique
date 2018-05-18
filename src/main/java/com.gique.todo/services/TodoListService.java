@@ -42,8 +42,8 @@ public class TodoListService {
     public void updateTodoTask(TodoModel todoModel) throws SQLException {
         log.info("updateTodoTask");
         Statement stmt = dataSource.getConnection().createStatement();
-        stmt.executeUpdate("UPDATE todo SET line_id = '"+todoModel.getLineId()+"', " +
-                "task = '"+todoModel.getTask()+"', status = '"+todoModel.getStatus()+"', " +
+        stmt.executeUpdate("UPDATE todo SET task = '"+todoModel.getTask()+"', " +
+                "status = '"+todoModel.getStatus()+"', " +
                 "important = '"+todoModel.getImportant()+"', due_date = '"+todoModel.getDueDate()+"', " +
                 "updated_at = now() WHERE id = '"+todoModel.getId()+"';");
     }
