@@ -36,10 +36,10 @@ public class TodoListController {
         this.todoListService = todoListService;
     }
 
-    @RequestMapping(value = "/getlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
     public HttpEntity<ResponseModel> getlist(@RequestParam(value = "line_id", required = false, defaultValue = "") String lineId,
                                                   HttpServletRequest request , HttpServletResponse response) throws Exception {
-        log.info("getlist");
+        log.info("get list");
         HttpEntity<ResponseModel> responseModel = null;
         try {
             List<TodoModel> todoModels = todoListService.getTodoTaskByLineId(lineId);
