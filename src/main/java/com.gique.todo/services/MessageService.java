@@ -2,7 +2,7 @@ package com.gique.todo.services;
 
 import com.gique.todo.constants.Constants;
 import com.gique.todo.models.TodoTaskModel;
-import com.gique.todo.models.TodoResponseModel;
+import com.gique.todo.models.TodoModel;
 import com.gique.todo.utils.Util;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
@@ -13,12 +13,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,16 +43,16 @@ public class MessageService {
                 TodoTaskModel todoTaskModel = splitTodoTask(msg);
                 todoTaskModel.setLineId(String.valueOf(event.getSource().getUserId()));
                 todoListService.saveTodoTask(todoTaskModel);
-                List<TodoResponseModel> todoResponseModelList = todoListService.getTodoTaskByLineId(String.valueOf(event.getSource().getUserId()));
+                List<TodoModel> todoModelList = todoListService.getTodoTaskByLineId(String.valueOf(event.getSource().getUserId()));
 
-                Optional.ofNullable(todoResponseModelList).orElseThrow(() -> new Exception());
+                Optional.ofNullable(todoModelList).orElseThrow(() -> new Exception());
 
                 StringBuffer resp = new StringBuffer();
                 resp.append("Todo List: \n");
-                for(TodoResponseModel todoResponseModel : todoResponseModelList){
-                    resp.append("Task: " + todoResponseModel.getTask());
-                    resp.append("\n Status: " + todoResponseModel.getStatus());
-                    resp.append(" Due date: " + todoResponseModel.getDueDate() + "\n");
+                for(TodoModel todoModel : todoModelList){
+                    resp.append("Task: " + todoModel.getTask());
+                    resp.append("\n Status: " + todoModel.getStatus());
+                    resp.append(" Due date: " + todoModel.getDueDate() + "\n");
                 }
 
                 return new TextMessage(resp.toString());

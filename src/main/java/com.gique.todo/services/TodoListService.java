@@ -1,6 +1,6 @@
 package com.gique.todo.services;
 
-import com.gique.todo.models.TodoResponseModel;
+import com.gique.todo.models.TodoModel;
 import com.gique.todo.models.TodoTaskModel;
 import com.gique.todo.utils.Util;
 import lombok.NonNull;
@@ -39,27 +39,27 @@ public class TodoListService {
                 "VALUES ('"+todoTaskModel.getLineId()+"', '"+todoTaskModel.getTask()+"', 'incomplete', '0', '"+dueDate+"', now(), now());");
     }
 
-    public void updateTodoTask(String id, String lineId, String task, String status, String important, String due_date) throws SQLException, ParseException {
+    public void updateTodoTask(TodoModel todoModel) throws SQLException {
         log.info("updateTodoTask");
         Statement stmt = dataSource.getConnection().createStatement();
-        stmt.executeUpdate("UPDATE todo SET line_id = '"+lineId+"', " +
-                "task = '"+task+"', status = '"+status+"', " +
-                "important = '"+important+"', due_date = '+"+due_date+"+', " +
-                "updated_at = now() WHERE id = '"+id+"';");
+        stmt.executeUpdate("UPDATE todo SET line_id = '"+todoModel.getLineId()+"', " +
+                "task = '"+todoModel.getTask()+"', status = '"+todoModel.getStatus()+"', " +
+                "important = '"+todoModel.getImportant()+"', due_date = '"+todoModel.getDueDate()+"', " +
+                "updated_at = now() WHERE id = '"+todoModel.getId()+"';");
     }
 
-    public List<TodoResponseModel> getTodoTaskByLineId(String lineId) throws SQLException {
+    public List<TodoModel> getTodoTaskByLineId(String lineId) throws SQLException {
         log.info("getTodoTaskByLineId: {}", lineId);
-        List<TodoResponseModel> todoResponseModelList = new ArrayList<>();
-        TodoResponseModel todoResponseModel;
+        List<TodoModel> todoResponseModelList = new ArrayList<>();
+        TodoModel todoResponseModel;
 
         Statement stmt = dataSource.getConnection().createStatement();
         ResultSet rs = stmt.executeQuery("SELECT id, line_id, task, status, important, due_date, created_at, updated_at FROM todo " +
-                "WHERE line_id = '"+lineId+"' ORDER BY important, due_date ASC");
+                "WHERE line_id = '"+lineId+"' ORDER BY important DESC, due_date ASC");
 
         if(rs != null){
             while (rs.next()) {
-                todoResponseModel = new TodoResponseModel();
+                todoResponseModel = new TodoModel();
                 todoResponseModel.setId(rs.getString("id"));
                 todoResponseModel.setLineId(rs.getString("line_id"));
                 todoResponseModel.setTask(rs.getString("task"));

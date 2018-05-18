@@ -1,7 +1,7 @@
 com/gique/todo/Application.class
 com/gique/todo/controllers/TodoListController.class
+com/gique/todo/models/TodoModel.class
 com/gique/todo/controllers/MessageController.class
-com/gique/todo/models/TodoResponseModel.class
 com/gique/todo/constants/Response.class
 com/gique/todo/models/ResponseModel.class
 com/gique/todo/constants/Constants.class

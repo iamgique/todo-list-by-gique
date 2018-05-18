@@ -1,3 +1,5 @@
 com/gique/todo/controllers/MessageControllerTest.class
 com/gique/todo/services/MessageServiceTest.class
 com/gique/todo/utils/UtilTest.class
+com/gique/todo/services/TodoListServiceTest.class
+com/gique/todo/controllers/TodoListControllerTest.class
