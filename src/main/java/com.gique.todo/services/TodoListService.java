@@ -39,6 +39,15 @@ public class TodoListService {
                 "VALUES ('"+todoTaskModel.getLineId()+"', '"+todoTaskModel.getTask()+"', 'incomplete', '0', '"+dueDate+"', now(), now());");
     }
 
+    public void updateTodoTask(String id, String lineId, String task, String status, String important, String due_date) throws SQLException, ParseException {
+        log.info("updateTodoTask");
+        Statement stmt = dataSource.getConnection().createStatement();
+        stmt.executeUpdate("UPDATE todo SET line_id = '"+lineId+"', " +
+                "task = '"+task+"', status = '"+status+"', " +
+                "important = '"+important+"', due_date = '+"+due_date+"+', " +
+                "updated_at = now() WHERE id = '"+id+"';");
+    }
+
     public List<TodoResponseModel> getTodoTaskByLineId(String lineId) throws SQLException {
         log.info("getTodoTaskByLineId: {}", lineId);
         List<TodoResponseModel> todoResponseModelList = new ArrayList<>();
