@@ -94,7 +94,7 @@ public class MessageService {
 
                 return new TextMessage(resp.toString());
             } else if (msg.equals("edit")) {
-                return new TextMessage("Edit todo list");
+                return new TextMessage("You can edit todo list in link below: \n https://bit.ly/2rU3RCy");
             } else {
                 return new TextMessage(Constants.EXAMPLE_POST_TODO_LIST.getContent());
             }
