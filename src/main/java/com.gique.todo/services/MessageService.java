@@ -26,47 +26,16 @@ import java.util.Optional;
 public class MessageService {
     private static final Logger log = LogManager.getLogger(MessageService.class);
 
-    @Autowired
-    private DataSource dataSource;
+    @NonNull
+    private TodoListService todoListService;
 
     @NonNull
     private final Util util;
 
     @Autowired
-    public MessageService(Util util){
+    public MessageService(TodoListService todoListService, Util util){
+        this.todoListService = todoListService;
         this.util = util;
-    }
-
-    public void saveTodoTask(TodoTaskModel todoTaskModel) throws SQLException, ParseException {
-        String dueDate = util.getDueDate(todoTaskModel.getDate(), todoTaskModel.getTime());
-        Statement stmt = dataSource.getConnection().createStatement();
-        stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, due_date, created_at, updated_at) " +
-                "VALUES ('"+todoTaskModel.getLineId()+"', '"+todoTaskModel.getTask()+"', 'incomplete', '0', '"+dueDate+"', now(), now());");
-    }
-
-    public List<TodoResponseModel> getTodoTaskByLineId(String lineId) throws SQLException {
-        List<TodoResponseModel> todoResponseModelList = new ArrayList<>();
-        TodoResponseModel todoResponseModel;
-
-        Statement stmt = dataSource.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT id, line_id, task, status, important, due_date, created_at, updated_at FROM todo " +
-                "WHERE line_id = '"+lineId+"' ORDER BY important, due_date ASC");
-
-        if(rs != null){
-            while (rs.next()) {
-                todoResponseModel = new TodoResponseModel();
-                todoResponseModel.setId(rs.getString("id"));
-                todoResponseModel.setLineId(rs.getString("line_id"));
-                todoResponseModel.setTask(rs.getString("task"));
-                todoResponseModel.setStatus(rs.getString("status"));
-                todoResponseModel.setImportant(rs.getString("important"));
-                todoResponseModel.setDueDate(rs.getString("due_date"));
-                todoResponseModel.setCreatedAt(rs.getString("created_at"));
-                todoResponseModel.setUpdatedAt(rs.getString("updated_at"));
-                todoResponseModelList.add(todoResponseModel);
-            }
-        }
-        return todoResponseModelList;
     }
 
     public TextMessage handleMessage(MessageEvent<TextMessageContent> event) throws Exception {
@@ -79,8 +48,8 @@ public class MessageService {
             if (util.checkCreateTodoFormat(msg)) {
                 TodoTaskModel todoTaskModel = splitTodoTask(msg);
                 todoTaskModel.setLineId(String.valueOf(event.getSource().getUserId()));
-                saveTodoTask(todoTaskModel);
-                List<TodoResponseModel> todoResponseModelList = getTodoTaskByLineId(String.valueOf(event.getSource().getUserId()));
+                todoListService.saveTodoTask(todoTaskModel);
+                List<TodoResponseModel> todoResponseModelList = todoListService.getTodoTaskByLineId(String.valueOf(event.getSource().getUserId()));
 
                 Optional.ofNullable(todoResponseModelList).orElseThrow(() -> new Exception());
 
