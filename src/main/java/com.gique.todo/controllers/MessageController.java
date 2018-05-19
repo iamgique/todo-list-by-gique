@@ -83,15 +83,15 @@ public class MessageController {
                 messageModels = new ArrayList<>();
                 messageModel = new MessageModel();
                 messageModel.setType("text");
-                messageModel.setText("This is your summary of task");
+                messageModel.setText("This is your summary of your task");
                 messageModels.add(messageModel);
                 messageModel = new MessageModel();
                 messageModel.setType("text");
-                messageModel.setText("The count of task completed is: " + completed + ".");
+                messageModel.setText("The count of your task completed is: " + completed + ".");
                 messageModels.add(messageModel);
                 messageModel = new MessageModel();
                 messageModel.setType("text");
-                messageModel.setText("The count of task incomplete is: " + incomplete + ".");
+                messageModel.setText("The count of your task incomplete is: " + incomplete + ".");
                 messageModels.add(messageModel);
 
                 externalService.pushMsg(lineId, messageModels);
