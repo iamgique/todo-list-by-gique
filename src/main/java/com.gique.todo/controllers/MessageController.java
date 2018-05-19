@@ -93,7 +93,6 @@ public class MessageController {
                 messageModel.setType("text");
                 messageModel.setText("The count of your task incomplete is: " + incomplete + ".");
                 messageModels.add(messageModel);
-
                 externalService.pushMsg(lineId, messageModels);
             }
 
