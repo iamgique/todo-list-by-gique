@@ -6,7 +6,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class TodoModel {
-    private String id = "";
+    private int id;
     private String lineId = "";
     private String task = "";
     private String status = "";

@@ -37,7 +37,7 @@ public class TodoListController {
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public HttpEntity<ResponseModel> getlist(@RequestParam(value = "line_id", required = false, defaultValue = "") String lineId,
+    public HttpEntity<ResponseModel> list(@RequestParam(value = "line_id", required = false, defaultValue = "") String lineId,
                                                   HttpServletRequest request , HttpServletResponse response) throws Exception {
         log.info("get list");
         HttpEntity<ResponseModel> responseModel = null;
@@ -53,7 +53,7 @@ public class TodoListController {
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HttpEntity<ResponseModel> editTodoList(@RequestBody TodoModel todoModel) throws Exception {
+    public HttpEntity<ResponseModel> edit(@RequestBody TodoModel todoModel) throws Exception {
         log.info("edit todo list" );
         HttpEntity<ResponseModel> responseModel = null;
         try {

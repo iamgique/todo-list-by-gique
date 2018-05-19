@@ -25,6 +25,22 @@ public class Util {
         return Pattern.matches(regex, msg);
     }
 
+    public static String convertFormatDateFromyyyyMMddtodMyy(String msg) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date d = sdf.parse(msg);
+        sdf.applyPattern("d/M/yy HH:mm");
+        String resp = sdf.format(d);
+        return resp;
+    }
+
+    public static String convertFormatDateFromdMyytoyyyyMMdd(String msg) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("d/M/yy HH:mm");
+        Date d = sdf.parse(msg);
+        sdf.applyPattern("yyyy-MM-dd HH:mm");
+        String resp = sdf.format(d);
+        return resp;
+    }
+
     public static String getDueDate(String reqDate, String reqTime) throws ParseException {
         log.info("getDueDate: reqDate: {} reqTime: {}", reqDate, reqTime);
         String dueDate = "";

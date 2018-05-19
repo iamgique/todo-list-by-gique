@@ -35,42 +35,61 @@ public class TodoListService {
         log.info("saveTodoTask");
         String dueDate = util.getDueDate(todoTaskModel.getDate(), todoTaskModel.getTime());
         Statement stmt = dataSource.getConnection().createStatement();
-        stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, due_date, created_at, updated_at) " +
-                "VALUES ('"+todoTaskModel.getLineId()+"', '"+todoTaskModel.getTask()+"', 'incomplete', '0', '"+dueDate+"', now(), now());");
+        try {
+            stmt.executeUpdate("INSERT INTO todo (line_id, task, status, important, due_date, created_at, updated_at) " +
+                    "VALUES ('" + todoTaskModel.getLineId() + "', '" + todoTaskModel.getTask() + "', 'incomplete', '0', '" + dueDate + "', now(), now());");
+        } catch (Exception e) {
+            log.error("Exception: {}", e.getMessage());
+        } finally {
+            if(stmt != null){ stmt.close(); }
+        }
     }
 
     public void updateTodoTask(TodoModel todoModel) throws SQLException {
         log.info("updateTodoTask");
         Statement stmt = dataSource.getConnection().createStatement();
-        stmt.executeUpdate("UPDATE todo SET task = '"+todoModel.getTask()+"', " +
-                "status = '"+todoModel.getStatus()+"', " +
-                "important = '"+todoModel.getImportant()+"', due_date = '"+todoModel.getDueDate()+"', " +
-                "updated_at = now() WHERE id = '"+todoModel.getId()+"';");
+        try {
+            stmt.executeUpdate("UPDATE todo SET task = '" + todoModel.getTask() + "', " +
+                    "status = '" + todoModel.getStatus() + "', " +
+                    "important = '" + todoModel.getImportant() + "', due_date = '" + Util.convertFormatDateFromdMyytoyyyyMMdd(todoModel.getDueDate()) + "', " +
+                    "updated_at = now() WHERE id = " + todoModel.getId() + ";");
+        } catch (Exception e) {
+            log.error("Exception: {}", e.getMessage());
+        } finally {
+            if(stmt != null){ stmt.close(); }
+        }
     }
 
-    public List<TodoModel> getTodoTaskByLineId(String lineId) throws SQLException {
+    public List<TodoModel> getTodoTaskByLineId(String lineId) throws SQLException, ParseException {
         log.info("getTodoTaskByLineId: {}", lineId);
         List<TodoModel> todoResponseModelList = new ArrayList<>();
         TodoModel todoResponseModel;
-
         Statement stmt = dataSource.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT id, line_id, task, status, important, due_date, created_at, updated_at FROM todo " +
-                "WHERE line_id = '"+lineId+"' ORDER BY important DESC, due_date ASC");
 
-        if(rs != null){
-            while (rs.next()) {
-                todoResponseModel = new TodoModel();
-                todoResponseModel.setId(rs.getString("id"));
-                todoResponseModel.setLineId(rs.getString("line_id"));
-                todoResponseModel.setTask(rs.getString("task"));
-                todoResponseModel.setStatus(rs.getString("status"));
-                todoResponseModel.setImportant(rs.getString("important"));
-                todoResponseModel.setDueDate(rs.getString("due_date"));
-                todoResponseModel.setCreatedAt(rs.getString("created_at"));
-                todoResponseModel.setUpdatedAt(rs.getString("updated_at"));
-                todoResponseModelList.add(todoResponseModel);
+        try {
+            ResultSet rs = stmt.executeQuery("SELECT id, line_id, task, status, important, due_date, created_at, updated_at FROM todo " +
+                    "WHERE line_id = '"+lineId+"' ORDER BY important DESC, due_date ASC");
+
+            if(rs != null){
+                while (rs.next()) {
+                    todoResponseModel = new TodoModel();
+                    todoResponseModel.setId(rs.getInt("id"));
+                    todoResponseModel.setLineId(rs.getString("line_id"));
+                    todoResponseModel.setTask(rs.getString("task"));
+                    todoResponseModel.setStatus(rs.getString("status").trim());
+                    todoResponseModel.setImportant(rs.getString("important"));
+                    todoResponseModel.setDueDate(Util.convertFormatDateFromyyyyMMddtodMyy(rs.getString("due_date")));
+                    todoResponseModel.setCreatedAt(Util.convertFormatDateFromyyyyMMddtodMyy(rs.getString("created_at")));
+                    todoResponseModel.setUpdatedAt(Util.convertFormatDateFromyyyyMMddtodMyy(rs.getString("updated_at")));
+                    todoResponseModelList.add(todoResponseModel);
+                }
             }
+        } catch (Exception e) {
+            log.error("Exception: {}", e.getMessage());
+        } finally {
+            if(stmt != null){ stmt.close(); }
         }
+
         return todoResponseModelList;
     }
 
