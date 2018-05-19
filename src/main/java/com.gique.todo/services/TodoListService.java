@@ -31,6 +31,46 @@ public class TodoListService {
         this.util = util;
     }
 
+    public List<String> listLineId() throws SQLException {
+        log.info("listLineId");
+        List<String> resp = new ArrayList<>();
+        Statement stmt = dataSource.getConnection().createStatement();
+        try {
+            ResultSet rs = stmt.executeQuery("SELECT line_id FROM todo GROUP BY line_id");
+            if(rs != null){
+                while (rs.next()) {
+                    resp.add(rs.getString("line_id"));
+                }
+            }
+        } catch (Exception e) {
+            log.error("Exception: {}", e.getMessage());
+        } finally {
+            if(stmt != null){ stmt.close(); }
+            return resp;
+        }
+    }
+
+    public String listCountStatusByLineId(String lineId, String status) throws SQLException {
+        log.info("listCountStatusByLineId");
+        String resp = null;
+        Statement stmt = dataSource.getConnection().createStatement();
+        try {
+            ResultSet rs = stmt.executeQuery("SELECT count(status) AS count FROM todo WHERE line_id = '"+lineId+"' AND status = '"+status+"';");
+            if(rs != null){
+                while (rs.next()) {
+                    resp = rs.getString("count");
+                }
+            } else {
+                resp = "0";
+            }
+        } catch (Exception e) {
+            log.error("Exception: {}", e.getMessage());
+        } finally {
+            if(stmt != null){ stmt.close(); }
+            return resp;
+        }
+    }
+
     public void saveTodoTask(TodoTaskModel todoTaskModel) throws SQLException, ParseException {
         log.info("saveTodoTask");
         String dueDate = util.getDueDate(todoTaskModel.getDate(), todoTaskModel.getTime());
