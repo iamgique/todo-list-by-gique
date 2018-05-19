@@ -11,7 +11,7 @@ import java.util.List;
 public class PushMsgModel {
 
     @JsonProperty("to")
-    private String to;
+    private List<String> to;
 
     @JsonProperty("messages")
     private List<MessageModel> messages;

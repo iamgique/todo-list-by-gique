@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -34,8 +35,11 @@ public class ExternalService {
     public void pushMsg(String lineId, List<MessageModel> msg){
         log.info("pushMsg to: {}", lineId);
 
+        List<String> lineIds = new ArrayList<>();
+        lineIds.add(lineId);
+
         PushMsgModel pushMsgModel = new PushMsgModel();
-        pushMsgModel.setTo(lineId);
+        pushMsgModel.setTo(lineIds);
         pushMsgModel.setMessages(msg);
 
         String push = new Gson().toJson(pushMsgModel);
