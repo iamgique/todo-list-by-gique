@@ -26,7 +26,7 @@ import java.util.Optional;
 @Controller
 @RequestMapping("todolist/v1")
 public class TodoListController {
-    private static final Logger log = LogManager.getLogger(Application.class);
+    private static final Logger log = LogManager.getLogger(TodoListController.class);
 
     @NonNull
     private final TodoListService todoListService;
